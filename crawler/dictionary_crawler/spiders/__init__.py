@@ -1,10 +1,10 @@
 import re
-
 import scrapy
+from crawler.dictionary_crawler.model.CambridgeItem import CambridgeItem
 
 # by Peyman (mohsenikiasari@ce.sharif.edu) in 2019.
+words = ['remember', 'us', 'this', 'way']
 
-words = ['I', 'hope', 'you', 'like', 'this', 'dictionary', 'web', 'crawler']
 
 #  scrapy crawl oxford -o oxford.jl
 class OxfordCrawler(scrapy.Spider):
@@ -70,29 +70,67 @@ class LongmanCrawler(scrapy.Spider):
 #  scrapy crawl cambridge -o cambridge.jl
 class CambridgeCrawler(scrapy.Spider):
     name = "cambridge"
-    allowed_domains = ["https://dictionary.cambridge.org"]
+    current_domain = "https://dictionary.cambridge.org"
+    allowed_domains = [current_domain]
     start_urls = ["https://dictionary.cambridge.org/dictionary/english/" + word for word in words]
 
     def parse(self, response):
         word = response.request.url.split("/")[-1]
-        definition_dict = {}
+        definition_dict = []
+        dictionary = response.xpath("//*[@id='page-content']/div[@class='page']/div/div")[0]
+        output_word = CambridgeItem()
+        for form_list in dictionary.xpath(".//div[@class='entry-body']/div"):
+            word_header = form_list.xpath(".//div[@class='pos-header dpos-h']")
+            uk = word_header.xpath(".//span[contains(@class,'uk dpron-i')]")
+            try:
+                uk_sound = self.current_domain + uk.xpath(".//amp-audio//@src").extract_first()
+            except:
+                uk_sound = None
 
-        for enrty in response.xpath("//div[@class='entry-body__el clrd js-share-holder']"):
-            part_of_speeches = enrty.xpath("./div[@class='pos-header']//span[@class='pos']/text()").extract()
-            def_list = enrty.xpath(
-                ".//div[@class='sense-body']/div[@class='def-block pad-indent']//b[@class='def']").extract()
-            def_list = [re.sub(r'<.*?>|:', "", i[15:-4]).strip() for i in def_list]
-            def_list = [i for i in def_list if i]
+            uk_pronounce = uk.xpath(".//span[@class='pron dpron']").extract_first()
+            uk_pronounce = re.sub(r'<.*?>|:', "", uk_pronounce).strip()
 
-            if def_list and part_of_speech:
-                for part_of_speech in part_of_speeches:
-                    if part_of_speech in definition_dict:
-                        definition_dict[part_of_speech] += def_list
-                    else:
-                        definition_dict[part_of_speech] = def_list
+            us = word_header.xpath(".//span[contains(@class,'us dpron-i')]")
+            try:
+                us_sound = self.current_domain + us.xpath(".//amp-audio//@src").extract_first()
+            except:
+                us_sound = None
+            us_pronounce = us.xpath(".//span[@class='pron dpron']").extract_first()
+            us_pronounce = re.sub(r'<.*?>|:', "", us_pronounce).strip()
+
+            try:
+                tense = word_header.xpath(".//span[contains(@class,'irreg-infls dinfls')]").extract()[0]
+                tense = re.sub(r'<.*?>|:', "", tense).strip()
+            except:
+                tense = None
+
+            form = word_header.xpath(".//span[contains(@class,'pos dpos')]/text()").extract_first()
+
+            definition_output = []
+            for definition_list in form_list.xpath(".//div[contains(@class,'pr dsense')]"):
+                for definition_block in definition_list.xpath(".//div[contains(@class,'def-block ddef_block')]"):
+                    try:
+                        level = definition_block.xpath(
+                            ".//span[contains(@class,'epp-xref dxref')]/text()").extract_first()
+                    except:
+                        level = None
+                    meaning = definition_block.xpath(".//div[contains(@class,'def ddef_d db')]").extract_first()
+                    meaning = re.sub(r'<.*?>|:', "", meaning).strip()
+                    example = definition_block.xpath(".//div[@class='def-body ddef_b']/div").extract()
+                    example = [re.sub(r'<.*?>|:', "", i).strip() for i in example]
+
+                    if meaning and level:
+                        definition_output.append(
+                            {'level': level, 'meaning': meaning, 'example': example})
+            if definition_output:
+                definition_dict.append({'form': form, 'tense': tense, 'us_pronounce': us_pronounce,
+                                        'us_sound': us_sound, 'uk_pronounce': uk_pronounce,
+                                        'uk_sound': uk_sound, 'definition': definition_output})
 
         if definition_dict:
-            yield {word: definition_dict}
+            output_word['word'] = word
+            output_word['definitions'] = definition_dict
+            yield output_word
 
 
 #  scrapy crawl webster -o webster.jl
