@@ -119,7 +119,7 @@ class CambridgeCrawler(scrapy.Spider):
                     example = definition_block.xpath(".//div[@class='def-body ddef_b']/div").extract()
                     example = [re.sub(r'<.*?>|:', "", i).strip() for i in example]
 
-                    if meaning and level:
+                    if meaning:
                         definition_output.append(
                             {'level': level, 'meaning': meaning, 'example': example})
             if definition_output:
