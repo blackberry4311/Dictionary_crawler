@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   #  redis:
@@ -18,6 +18,9 @@ services:
       - "18081:8081"
     depends_on:
       - mongodb-primary
+    networks:
+      - crawler
+
   mongodb-primary:
     image: 'bitnami/mongodb:4.1-ol-7'
     ports:
@@ -33,6 +36,8 @@ services:
       - MONGODB_DATABASE=cambridge
     volumes:
       - 'mongodb_master_data:/bitnami'
+    networks:
+      - crawler
 
   mongodb-secondary:
     image: 'bitnami/mongodb:4.1-ol-7'
@@ -48,6 +53,8 @@ services:
       - MONGODB_PRIMARY_PORT_NUMBER=27020
       - MONGODB_PRIMARY_ROOT_PASSWORD=2jd!UT:4,?fVXV^s
       - MONGODB_REPLICA_SET_KEY=devenv
+    networks:
+      - crawler
 
   mongodb-arbiter:
     image: 'bitnami/mongodb:4.1-ol-7'
@@ -63,6 +70,8 @@ services:
       - MONGODB_PRIMARY_PORT_NUMBER=27020
       - MONGODB_PRIMARY_ROOT_PASSWORD=2jd!UT:4,?fVXV^s
       - MONGODB_REPLICA_SET_KEY=devenv
+    networks:
+      - crawler
 #  es01:
 #    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.1
 #    environment:
@@ -118,4 +127,4 @@ volumes:
 #    driver: local
 
 networks:
-  esnet:
+  crawler:
