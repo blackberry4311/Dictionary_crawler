@@ -70,7 +70,7 @@ DOWNLOAD_DELAY = 5
 ITEM_PIPELINES = {
     'dictionary_crawler.pipelines.MongoPipeline': 300,
 }
-MONGO_HOST = 'localhost:27020'
+MONGO_HOST = 'iword.ddns.net:27020'
 MONGO_USERNAME = 'cambridge'
 MONGO_PASSWORD = '2jd!UT:4,?fVXV^s'
 MONGO_DATABASE = 'cambridge'
