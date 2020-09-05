@@ -4,6 +4,8 @@ from scrapy import Spider
 
 from crawler.dictionary_crawler.model.CambridgeItem import CambridgeItem
 
+# words = ['I', 'hope', 'you', 'like', 'this', 'dictionary', 'web', 'crawler']
+
 
 #  scrapy crawl cambridge -o cambridge.jl
 class CambridgeCrawler(Spider):
@@ -20,7 +22,7 @@ class CambridgeCrawler(Spider):
     def parse(self, response):
         word = response.request.url.split("/")[-1]
         definition_dict = []
-        dictionary = response.xpath("//*[@id='page-content']/div[@class='page']/div/div")[0]
+        dictionary = response.xpath("//*[@id='page-content']/div[@class='page']//div[@class='entry']")[0]
         output_word = CambridgeItem()
         for form_list in dictionary.xpath(".//div[@class='entry-body']/div"):
             word_header = form_list.xpath(".//div[@class='pos-header dpos-h']")
