@@ -7,7 +7,7 @@ from crawler.dictionary_crawler.model.CambridgeItem import CambridgeItem
 # words = ['I', 'hope', 'you', 'like', 'this', 'dictionary', 'web', 'crawler']
 
 
-#  scrapy crawl cambridge -o cambridge.jl
+#  scrapy crawl cambridge -a words="test,remember"
 class CambridgeCrawler(Spider):
     name = "cambridge"
     current_domain = "https://dictionary.cambridge.org"
