@@ -78,8 +78,8 @@ ITEM_PIPELINES = {
 
 MONGO_HOST = 'localhost:27020'
 MONGO_USERNAME = 'admin'
-MONGO_PASSWORD = 'wow^bkIt'
-MONGO_DATABASE = 'cambridge'
+MONGO_PASSWORD = 'password'
+MONGO_DATABASE = 'dmc'
 
 
 # Enable and configure the AutoThrottle extension (disabled by default)

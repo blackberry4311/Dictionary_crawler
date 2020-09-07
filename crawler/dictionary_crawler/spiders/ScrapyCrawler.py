@@ -1,10 +1,12 @@
+import datetime
 import re
 
 from scrapy import Spider
 
 from crawler.dictionary_crawler.model.CambridgeItem import CambridgeItem
 
-# words = ['I', 'hope', 'you', 'like', 'this', 'dictionary', 'web', 'crawler']
+
+# words="goat,angry,clean,cool,ask,street,swim,skate,roof,worse,field,change,choose,different,stadium,competition,foggy,journalist,invent,important,design,region,curious,peaceful,meaning,direct,study,involve,approximate,considerable,alternative,interfere,measure,navigate,opponent,Profound,conceptual,Emission,segment,excavate,eradicate,impartial"
 
 
 #  scrapy crawl cambridge -o cambridge.jl
@@ -75,4 +77,5 @@ class CambridgeCrawler(Spider):
         if definition_dict:
             output_word['word'] = word
             output_word['definitions'] = definition_dict
+            output_word['crawled_at'] = datetime.datetime.utcnow()
             yield output_word
