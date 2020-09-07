@@ -9,7 +9,7 @@ from crawler.dictionary_crawler.model.CambridgeItem import CambridgeItem
 # words="goat,angry,clean,cool,ask,street,swim,skate,roof,worse,field,change,choose,different,stadium,competition,foggy,journalist,invent,important,design,region,curious,peaceful,meaning,direct,study,involve,approximate,considerable,alternative,interfere,measure,navigate,opponent,Profound,conceptual,Emission,segment,excavate,eradicate,impartial"
 
 
-#  scrapy crawl cambridge -o cambridge.jl
+#  scrapy crawl cambridge -a words="test,remember"
 class CambridgeCrawler(Spider):
     name = "cambridge"
     current_domain = "https://dictionary.cambridge.org"
